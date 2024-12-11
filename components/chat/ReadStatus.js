@@ -46,6 +46,19 @@ const ReadStatus = ({
     }
 
     try {
+      if (participants.length === 1) {
+        setHasMarkedAsRead(true);
+        setCurrentReaders(prev => {
+          if (prev.some(reader => reader.userId === currentUserId)) {
+            return prev;
+          }
+          return [...prev, {
+            userId: currentUserId,
+            readAt: new Date()
+          }];
+        });
+        return;
+      }
       // Socket.IO를 통해 서버에 읽음 상태 전송
       socketRef.current.emit('markMessagesAsRead', {
         messageIds: [messageId]
@@ -195,8 +208,7 @@ const ReadStatus = ({
         </Tooltip>
       </div>
     );
-  }
-
+  };
 
 
   // 읽지 않은 사람이 있는 경우
